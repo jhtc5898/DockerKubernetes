@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert -f docker-compose.yml
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: dockerdb
+  name: dockerdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: dockerdb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert -f docker-compose.yml
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/docker_puente: "true"
+        io.kompose.service: dockerdb
+    spec:
+      containers:
+      - env:
+        - name: MYSQL_DATABASE
+          value: SistemsDistribuidos
+        - name: MYSQL_PASSWORD
+          value: john0105598254
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+        - name: MYSQL_USER
+          value: john
+        image: mysql:latest
+        imagePullPolicy: ""
+        name: dockerdb
+        ports:
+        - containerPort: 3306
+        resources: {}
+        volumeMounts:
+        - mountPath: /docker-entrypoint-initdb.d/
+          name: dockerdb-claim0
+      hostname: dockerdb
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+      - name: dockerdb-claim0
+        persistentVolumeClaim:
+          claimName: dockerdb-claim0
+status: {}
